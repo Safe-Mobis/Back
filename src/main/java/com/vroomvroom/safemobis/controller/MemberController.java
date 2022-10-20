@@ -41,4 +41,9 @@ public class MemberController {
         TokenInfo tokenInfo = memberService.login(username, password);
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), tokenInfo), OK);
     }
+
+    @PostMapping("/test")
+    public ResponseEntity<String> test() {
+        return new ResponseEntity<>("test success!!", OK);
+    }
 }
