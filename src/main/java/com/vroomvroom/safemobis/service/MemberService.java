@@ -2,6 +2,7 @@ package com.vroomvroom.safemobis.service;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
+import com.vroomvroom.safemobis.error.exception.EntityAlreadyExistException;
 import com.vroomvroom.safemobis.repository.MemberRepository;
 import com.vroomvroom.safemobis.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,20 @@ public class MemberService {
 
     @Transactional
     public void save(String username, String password) {
+
+        if (isMemberExists(username)) {
+            throw new EntityAlreadyExistException("[" + username + "] 이미 회원가입된 아이디입니다.");
+        }
         Member member = Member.builder()
                 .username(username)
                 .password(password)
                 .roles(Collections.singletonList("USER"))
                 .build();
         memberRepository.save(member);
+    }
+
+    private boolean isMemberExists(String username) {
+        return memberRepository.findByUsername(username).isPresent();
     }
 
     @Transactional
@@ -43,8 +52,6 @@ public class MemberService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
-        return tokenInfo;
+        return jwtTokenProvider.generateToken(authentication);
     }
 }
