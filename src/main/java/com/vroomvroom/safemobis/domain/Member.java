@@ -1,5 +1,6 @@
 package com.vroomvroom.safemobis.domain;
 
+import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +31,15 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private TrafficCode trafficCode;
+
+    @OneToMany(mappedBy = "member")
+    private List<TrafficMode> trafficModes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "member")
+    private Position position;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
