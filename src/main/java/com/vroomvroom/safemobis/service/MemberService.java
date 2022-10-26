@@ -1,9 +1,15 @@
 package com.vroomvroom.safemobis.service;
 
 import com.vroomvroom.safemobis.domain.Member;
+import com.vroomvroom.safemobis.domain.Position;
+import com.vroomvroom.safemobis.domain.TrafficMode;
+import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
+import com.vroomvroom.safemobis.dto.response.member.MembersPositionPutResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.error.exception.EntityAlreadyExistException;
+import com.vroomvroom.safemobis.error.exception.EntityNotFoundException;
 import com.vroomvroom.safemobis.repository.MemberRepository;
+import com.vroomvroom.safemobis.security.SecurityUtil;
 import com.vroomvroom.safemobis.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.*;
+
+import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.*;
+import static java.lang.Boolean.TRUE;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,16 +33,25 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public void save(String username, String password) {
-
-        if (isMemberExists(username)) {
-            throw new EntityAlreadyExistException("[" + username + "] 이미 회원가입된 아이디입니다.");
+    public void save(Member member) {
+        if (isMemberExists(member.getUsername())) {
+            throw new EntityAlreadyExistException("[" + member.getUsername() + "] 이미 회원가입된 아이디입니다.");
         }
-        Member member = Member.builder()
-                .username(username)
-                .password(password)
-                .roles(Collections.singletonList("USER"))
-                .build();
+
+        List<TrafficMode> trafficModes = new ArrayList<>();
+        for (TrafficCode trafficCode : TrafficCode.values()) {
+            trafficModes.add(TrafficMode.builder()
+                    .trafficCode(trafficCode)
+                    .carFlag(TRUE)
+                    .pedestrianFlag(TRUE)
+                    .childFlag(TRUE)
+                    .kickBoardFlag(TRUE)
+                    .bicycleFlag(TRUE)
+                    .motorcycleFlag(TRUE)
+                    .member(member)
+                    .build());
+        }
+        member.setTrafficModes(trafficModes);
         memberRepository.save(member);
     }
 
@@ -53,5 +71,49 @@ public class MemberService {
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         return jwtTokenProvider.generateToken(authentication);
+    }
+
+    @Transactional
+    public MembersPositionPutResponseDto updatePosition(Position updatePosition) {
+        Member member = findMember(SecurityUtil.getCurrentUsername());
+        member.getPosition().updatePosition(updatePosition);
+        return MembersPositionPutResponseDto.from(getSurroundMembers(member));
+    }
+
+    public Member findMember(String username) {
+        return memberRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("[" + username + "] 회원가입이 되어있지 않습니다."));
+    }
+
+    private List<Member> getSurroundMembers(Member member) {
+        final double RADIUS = 0.05;
+        Map<TrafficCode, Boolean> trafficWarningMap = getTrafficWarningMap(member);
+        Position position = member.getPosition();
+        List<Member> members = memberRepository.findAll();
+        List<Member> surroundingMembers = new ArrayList<>();
+        for (Member surroundingMember : members) {
+            if (member.getId().equals(surroundingMember.getId())) {
+                continue;
+            }
+            Position surroundingPosition = surroundingMember.getPosition();
+            if (trafficWarningMap.get(surroundingMember.getTrafficCode())) {
+                if (Math.pow(RADIUS, 2) >= (Math.pow(position.getX() - surroundingPosition.getX(), 2) + Math.pow(position.getY() - surroundingPosition.getY(), 2))) {
+                    surroundingMembers.add(surroundingMember);
+                }
+            }
+        }
+        return surroundingMembers;
+    }
+
+    private Map<TrafficCode, Boolean> getTrafficWarningMap(Member member) {
+        TrafficMode trafficMode = member.getCurrentTrafficMode();
+        Map<TrafficCode, Boolean> warningMap = new HashMap<>();
+        warningMap.put(CAR, trafficMode.getCarFlag());
+        warningMap.put(PEDESTRIAN, trafficMode.getPedestrianFlag());
+        warningMap.put(CHILD, trafficMode.getChildFlag());
+        warningMap.put(KICK_BOARD, trafficMode.getKickBoardFlag());
+        warningMap.put(BICYCLE, trafficMode.getBicycleFlag());
+        warningMap.put(MOTORCYCLE, trafficMode.getMotorcycleFlag());
+        return warningMap;
     }
 }

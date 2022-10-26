@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -21,9 +22,6 @@ public class TrafficMode extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TrafficCode trafficCode;
-
-    @Column(nullable = false)
-    private String name;
 
     @Column(nullable = false)
     private Boolean carFlag;

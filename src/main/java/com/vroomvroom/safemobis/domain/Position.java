@@ -1,13 +1,11 @@
 package com.vroomvroom.safemobis.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,8 +30,13 @@ public class Position extends BaseEntity {
     @Column(nullable = false)
     private Double velocity;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @OneToOne(mappedBy = "position")
     private Member member;
 
+    public void updatePosition(Position updatePosition) {
+        x = updatePosition.getX();
+        y = updatePosition.getY();
+        direction = updatePosition.getDirection();
+        velocity = updatePosition.getVelocity();
+    }
 }

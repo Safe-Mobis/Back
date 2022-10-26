@@ -33,12 +33,14 @@ public class Member extends BaseEntity implements UserDetails {
     private String password;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TrafficCode trafficCode;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<TrafficMode> trafficModes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "position_id")
     private Position position;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -70,5 +72,18 @@ public class Member extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void setTrafficModes(List<TrafficMode> trafficModes) {
+        this.trafficModes = trafficModes;
+    }
+
+    public TrafficMode getCurrentTrafficMode() {
+        for (TrafficMode trafficMode : trafficModes) {
+            if (trafficCode == trafficMode.getTrafficCode()) {
+                return trafficMode;
+            }
+        }
+        return null;
     }
 }
