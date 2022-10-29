@@ -6,7 +6,7 @@ import com.vroomvroom.safemobis.dto.request.member.MembersLoginPostRequestDto;
 import com.vroomvroom.safemobis.dto.request.member.MembersPositionPutRequestDto;
 import com.vroomvroom.safemobis.dto.request.member.MembersPostRequestDto;
 import com.vroomvroom.safemobis.dto.response.base.BaseResponse;
-import com.vroomvroom.safemobis.dto.response.member.MembersPositionPutResponseDto;
+import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import java.util.Collections;
 
 import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.CAR;
@@ -57,9 +56,16 @@ public class MemberController {
                 .y(membersPositionPutRequestDto.getX())
                 .direction(membersPositionPutRequestDto.getDirection())
                 .velocity(membersPositionPutRequestDto.getVelocity())
+                .acceleration(membersPositionPutRequestDto.getAcceleration())
                 .build();
-        MembersPositionPutResponseDto membersPositionPutResponseDto = memberService.updatePosition(updatePosition);
-        return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersPositionPutResponseDto), OK);
+        memberService.updatePosition(updatePosition);
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value()), OK);
+    }
+
+    @GetMapping("/warning")
+    public ResponseEntity<BaseResponse> getWarning(HttpServletRequest request) throws Exception {
+        MembersWarningGetResponseDto membersWarningGetResponseDto = memberService.getSurroundMembersAndWarning();
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersWarningGetResponseDto), OK);
     }
 
     @PostMapping("/test")

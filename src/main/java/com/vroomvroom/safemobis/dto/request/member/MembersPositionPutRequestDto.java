@@ -8,11 +8,13 @@ import javax.validation.constraints.NotNull;
 public class MembersPositionPutRequestDto {
 
     @NotNull
-    private Double x;
+    private double x;
     @NotNull
-    private Double y;
+    private double y;
     @NotNull
-    private Double direction;
+    private double direction;
     @NotNull
-    private Double velocity;
+    private double velocity;
+    @NotNull
+    private double acceleration;
 }
