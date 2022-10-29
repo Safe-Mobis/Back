@@ -44,10 +44,11 @@ public class InitializeDatabase {
 
     private Position createTestPosition() {
         return Position.builder()
-                .x(0.00)
+                .x(0.0)
                 .y(0.0)
                 .direction(0.0)
                 .velocity(0.0)
+                .acceleration(0.0)
                 .build();
     }
 
@@ -63,10 +64,11 @@ public class InitializeDatabase {
 
     private Position createTestSurroundingPosition() {
         return Position.builder()
-                .x(0.025)
-                .y(0.025)
+                .x(0.0)
+                .y(0.0)
                 .direction(0.0)
                 .velocity(0.0)
+                .acceleration(0.0)
                 .build();
     }
 

@@ -5,6 +5,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
+import static java.lang.Math.*;
+
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,16 +21,19 @@ public class Position extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Double x;
+    private double x;
 
     @Column(nullable = false)
-    private Double y;
+    private double y;
 
     @Column(nullable = false)
-    private Double direction;
+    private double direction;
 
     @Column(nullable = false)
-    private Double velocity;
+    private double velocity;
+
+    @Column(nullable = false)
+    private double acceleration;
 
     @OneToOne(mappedBy = "position")
     private Member member;
@@ -38,5 +43,19 @@ public class Position extends BaseEntity {
         y = updatePosition.getY();
         direction = updatePosition.getDirection();
         velocity = updatePosition.getVelocity();
+        acceleration = updatePosition.getAcceleration();
+    }
+
+    public Position getPositionAfter(double time) {
+        double space = velocity * time + 0.5 * acceleration * pow(time, 2);
+        double x_prime = x + space * cos(direction);
+        double y_prime = y + space * sin(direction);
+        return Position.builder()
+                .x(x_prime)
+                .y(y_prime)
+                .direction(direction)
+                .velocity(velocity)
+                .acceleration(acceleration)
+                .build();
     }
 }

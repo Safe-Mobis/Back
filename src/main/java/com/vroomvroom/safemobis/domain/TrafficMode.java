@@ -24,22 +24,22 @@ public class TrafficMode extends BaseEntity {
     private TrafficCode trafficCode;
 
     @Column(nullable = false)
-    private Boolean carFlag;
+    private boolean carFlag;
 
     @Column(nullable = false)
-    private Boolean pedestrianFlag;
+    private boolean pedestrianFlag;
 
     @Column(nullable = false)
-    private Boolean childFlag;
+    private boolean childFlag;
 
     @Column(nullable = false)
-    private Boolean kickBoardFlag;
+    private boolean kickBoardFlag;
 
     @Column(nullable = false)
-    private Boolean bicycleFlag;
+    private boolean bicycleFlag;
 
     @Column(nullable = false)
-    private Boolean motorcycleFlag;
+    private boolean motorcycleFlag;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

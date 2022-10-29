@@ -8,10 +8,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.*;
+import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.MOTORCYCLE;
 
 @Builder
 @Getter
@@ -78,12 +79,24 @@ public class Member extends BaseEntity implements UserDetails {
         this.trafficModes = trafficModes;
     }
 
-    public TrafficMode getCurrentTrafficMode() {
+    public Map<TrafficCode, Boolean> getTrafficWarningMap() throws Exception {
+        TrafficMode trafficMode = getCurrentTrafficMode();
+        Map<TrafficCode, Boolean> warningMap = new HashMap<>();
+        warningMap.put(CAR, trafficMode.isCarFlag());
+        warningMap.put(PEDESTRIAN, trafficMode.isPedestrianFlag());
+        warningMap.put(CHILD, trafficMode.isChildFlag());
+        warningMap.put(KICK_BOARD, trafficMode.isKickBoardFlag());
+        warningMap.put(BICYCLE, trafficMode.isBicycleFlag());
+        warningMap.put(MOTORCYCLE, trafficMode.isMotorcycleFlag());
+        return warningMap;
+    }
+
+    public TrafficMode getCurrentTrafficMode() throws Exception {
         for (TrafficMode trafficMode : trafficModes) {
             if (trafficCode == trafficMode.getTrafficCode()) {
                 return trafficMode;
             }
         }
-        return null;
+        throw new Exception("사용자의 현재 trafficCode[" + trafficCode + "]와 일치하는 trafficMode가 존재하지 않습니다.");
     }
 }
