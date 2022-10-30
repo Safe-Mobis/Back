@@ -96,7 +96,7 @@ public class MemberService {
     }
 
     private List<Member> getSurroundingMembers(Member member) throws Exception {
-        final double RADIUS = 0.05;
+        final double RADIUS = 50.0;
         Map<TrafficCode, Boolean> trafficWarningMap = member.getTrafficWarningMap();
         Position position = member.getPosition();
         List<Member> members = memberRepository.findAll();
@@ -116,7 +116,7 @@ public class MemberService {
     }
 
     private static List<Member> getWarningMembers(Member member, List<Member> surroundingMembers) {
-        final double TIME = 3;
+        final double TIME = 3.0;
         Map<TrafficCode, Double> radiusMap = getRadiusMap();
         Position beforePosition = member.getPosition();
         Position afterPosition = beforePosition.getPositionAfter(TIME);

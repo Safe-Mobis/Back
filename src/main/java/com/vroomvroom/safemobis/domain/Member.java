@@ -38,6 +38,7 @@ public class Member extends BaseEntity implements UserDetails {
     private TrafficCode trafficCode;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<TrafficMode> trafficModes = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
