@@ -53,7 +53,7 @@ public class MemberController {
     public ResponseEntity<BaseResponse> updatePosition(@Valid @RequestBody MembersPositionPutRequestDto membersPositionPutRequestDto, HttpServletRequest request) {
         Position updatePosition = Position.builder()
                 .x(membersPositionPutRequestDto.getX())
-                .y(membersPositionPutRequestDto.getX())
+                .y(membersPositionPutRequestDto.getY())
                 .direction(membersPositionPutRequestDto.getDirection())
                 .velocity(membersPositionPutRequestDto.getVelocity())
                 .acceleration(membersPositionPutRequestDto.getAcceleration())
