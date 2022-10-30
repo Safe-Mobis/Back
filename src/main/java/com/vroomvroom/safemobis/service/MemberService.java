@@ -79,7 +79,7 @@ public class MemberService {
     @Transactional
     public void updatePosition(Position updatePosition) {
         Member member = findMember(SecurityUtil.getCurrentUsername());
-        member.getPosition().updatePosition(updatePosition);
+        member.updatePosition(updatePosition);
     }
 
     public Member findMember(String username) {

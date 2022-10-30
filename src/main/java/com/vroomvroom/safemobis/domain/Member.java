@@ -100,4 +100,12 @@ public class Member extends BaseEntity implements UserDetails {
         }
         throw new Exception("사용자의 현재 trafficCode[" + trafficCode + "]와 일치하는 trafficMode가 존재하지 않습니다.");
     }
+
+    public void updatePosition(Position updatePosition) {
+        if (position == null) {
+            position = updatePosition;
+        } else {
+            position.updatePosition(updatePosition);
+        }
+    }
 }
