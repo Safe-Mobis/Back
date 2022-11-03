@@ -1,6 +1,8 @@
 package com.vroomvroom.safemobis.domain;
 
 import lombok.*;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -16,7 +18,7 @@ import static java.lang.Math.*;
 public class Position extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Long id;
 
@@ -34,6 +36,12 @@ public class Position extends BaseEntity {
 
     @Column(nullable = false)
     private double acceleration;
+
+    @Column
+    private Point point;
+
+    @Column
+    private LineString lineString;
 
     @OneToOne(mappedBy = "position")
     private Member member;

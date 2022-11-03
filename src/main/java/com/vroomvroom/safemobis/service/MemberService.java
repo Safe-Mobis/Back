@@ -20,10 +20,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.*;
-import static com.vroomvroom.safemobis.util.CircleUtil.*;
+import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.SAFE;
+import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.WARN;
+import static com.vroomvroom.safemobis.util.CircleUtil.getRadiusMap;
 import static java.lang.Boolean.TRUE;
 
 @Service
