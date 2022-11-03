@@ -23,7 +23,7 @@ import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.MOTORCYCLE;
 public class Member extends BaseEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, nullable = false)
     private Long id;
 
