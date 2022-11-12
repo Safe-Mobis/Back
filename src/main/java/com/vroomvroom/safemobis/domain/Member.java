@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.*;
-import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.MOTORCYCLE;
 
 @Builder
 @Getter
@@ -24,7 +23,7 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false, nullable = false)
+    @Column(name = "member_id", updatable = false, nullable = false)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -40,6 +39,10 @@ public class Member extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     @Builder.Default
     private List<TrafficMode> trafficModes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Path> paths = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "position_id")
