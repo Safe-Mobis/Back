@@ -16,7 +16,7 @@ public class TrafficMode extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false, nullable = false)
+    @Column(name = "traffic_mode_id", updatable = false, nullable = false)
     private Long id;
 
     @Column(nullable = false)

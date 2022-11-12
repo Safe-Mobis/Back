@@ -64,7 +64,11 @@ public class MemberController {
 
     @GetMapping("/warning")
     public ResponseEntity<BaseResponse> getWarning(HttpServletRequest request) throws Exception {
+        long beforeTime = System.currentTimeMillis();
         MembersWarningGetResponseDto membersWarningGetResponseDto = memberService.getSurroundMembersAndWarning();
+        long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+        long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
+        System.out.println("시간차이(m) : "+secDiffTime);
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersWarningGetResponseDto), OK);
     }
 

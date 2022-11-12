@@ -37,10 +37,10 @@ public class Position extends BaseEntity {
     @Column(nullable = false)
     private double acceleration;
 
-    @Column
+    @Column(columnDefinition = "GEOMETRY SRID 4326")
     private Point point;
 
-    @Column
+    @Column(columnDefinition = "GEOMETRY SRID 4326")
     private LineString lineString;
 
     @OneToOne(mappedBy = "position")

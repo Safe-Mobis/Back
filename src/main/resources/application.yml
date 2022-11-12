@@ -1,22 +1,11 @@
 spring:
-  profiles:
-    active: local
-
   datasource:
-#    url: jdbc:h2:mem:testdb
-#    username: sa
-#    driver-class-name: org.h2.Driver
-    url: jdbc:mysql://localhost:3306/safe_mobis?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
-    username: root
-    password: hc29181722!
+    url: jdbc:mysql://safe-mobis.cl92zanhxwsm.ap-northeast-2.rds.amazonaws.com:3306/safe_mobis?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    username: admin
+    password: ENC(u+blv0TlhsG9nJyS0bFnv7rE8pxjsr+U)
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-#  h2:
-#    console:
-#      enabled: true
-#      settings:
-#        web-allow-others: true
-#      path: /h2-console
+    hikari:
+      max-lifetime: 177000
 
   jpa:
     hibernate:
@@ -26,11 +15,27 @@ spring:
         format_sql: true
     database: mysql
     database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+    open-in-view: false
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 logging:
   level:
     org.hibernate.SQL: debug
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
 
 jwt:
   secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
 
+awsParameterStorePropertySource:
+  enabled: true
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ${/vroomvroom/cloud-parameter-store/jasypt.encryptor.password}
