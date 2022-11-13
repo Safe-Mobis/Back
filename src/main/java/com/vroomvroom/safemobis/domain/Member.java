@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.*;
+import static java.lang.Boolean.TRUE;
 
 @Builder
 @Getter
@@ -79,8 +80,19 @@ public class Member extends BaseEntity implements UserDetails {
         return true;
     }
 
-    public void setTrafficModes(List<TrafficMode> trafficModes) {
-        this.trafficModes = trafficModes;
+    public void initializeTrafficModes() {
+        for (TrafficCode trafficCode : TrafficCode.values()) {
+            trafficModes.add(TrafficMode.builder()
+                    .trafficCode(trafficCode)
+                    .carFlag(TRUE)
+                    .pedestrianFlag(TRUE)
+                    .childFlag(TRUE)
+                    .kickBoardFlag(TRUE)
+                    .bicycleFlag(TRUE)
+                    .motorcycleFlag(TRUE)
+                    .member(this)
+                    .build());
+        }
     }
 
     public Map<TrafficCode, Boolean> getTrafficWarningMap() throws Exception {

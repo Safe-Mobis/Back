@@ -2,7 +2,6 @@ package com.vroomvroom.safemobis.service;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Position;
-import com.vroomvroom.safemobis.domain.TrafficMode;
 import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
 import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
@@ -27,7 +26,6 @@ import java.util.Map;
 import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.SAFE;
 import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.WARN;
 import static com.vroomvroom.safemobis.util.CircleUtil.getRadiusMap;
-import static java.lang.Boolean.TRUE;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,21 +41,7 @@ public class MemberService {
         if (isMemberExists(member.getUsername())) {
             throw new EntityAlreadyExistException("[" + member.getUsername() + "] 이미 회원가입된 아이디입니다.");
         }
-
-        List<TrafficMode> trafficModes = new ArrayList<>();
-        for (TrafficCode trafficCode : TrafficCode.values()) {
-            trafficModes.add(TrafficMode.builder()
-                    .trafficCode(trafficCode)
-                    .carFlag(TRUE)
-                    .pedestrianFlag(TRUE)
-                    .childFlag(TRUE)
-                    .kickBoardFlag(TRUE)
-                    .bicycleFlag(TRUE)
-                    .motorcycleFlag(TRUE)
-                    .member(member)
-                    .build());
-        }
-        member.setTrafficModes(trafficModes);
+        member.initializeTrafficModes();
         memberRepository.save(member);
     }
 
@@ -67,15 +51,8 @@ public class MemberService {
 
     @Transactional
     public TokenInfo login(String username, String password) {
-        // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
-        // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-
-        // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-        // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        // 3. 인증 정보를 기반으로 JWT 토큰 생성
         return jwtTokenProvider.generateToken(authentication);
     }
 
