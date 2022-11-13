@@ -61,6 +61,12 @@ public class MemberService {
 
     @Transactional
     public void savePath(Path path) {
+        List<PathIntersection> pathIntersections = getPathIntersections(path);
+        path.setPathIntersections(pathIntersections);
+        pathRepository.save(path);
+    }
+
+    private List<PathIntersection> getPathIntersections(Path path) {
         LineString route = path.getRoute();
         List<PathIntersection> pathIntersections = new ArrayList<>();
         List<Path> memberPaths = pathRepository.findAll();
@@ -78,8 +84,7 @@ public class MemberService {
                 }
             }
         }
-        path.setPathIntersections(pathIntersections);
-        pathRepository.save(path);
+        return pathIntersections;
     }
 
     private void addBothPathInterSection(List<PathIntersection> pathIntersections, Path path1, Path path2, Point intersectionPoint) {

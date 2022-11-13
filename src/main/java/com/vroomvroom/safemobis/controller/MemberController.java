@@ -40,14 +40,20 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<BaseResponse> save(@Valid @RequestBody MembersPostRequestDto membersPostRequestDto, HttpServletRequest request) {
-        Member member = Member.builder()
-                .username(membersPostRequestDto.getUsername())
-                .password(membersPostRequestDto.getPassword())
+        String username = membersPostRequestDto.getUsername();
+        String password = membersPostRequestDto.getPassword();
+        Member member = getMember(username, password);
+        memberService.save(member);
+        return new ResponseEntity<>(BaseResponse.of(request, CREATED.value()), CREATED);
+    }
+
+    private Member getMember(String username, String password) {
+        return Member.builder()
+                .username(username)
+                .password(password)
                 .trafficCode(CAR)
                 .roles(Collections.singletonList("USER"))
                 .build();
-        memberService.save(member);
-        return new ResponseEntity<>(BaseResponse.of(request, CREATED.value()), CREATED);
     }
 
     @PostMapping("/login")
@@ -60,24 +66,33 @@ public class MemberController {
 
     @PostMapping("/path")
     public ResponseEntity<BaseResponse> savePath(@Valid @RequestBody MembersPathPostRequestDto membersPathPostRequestDto, HttpServletRequest request) {
-        List<MembersPathRequestDto> route = membersPathPostRequestDto.getRoute();
-        Path path = getPath(route);
+        List<MembersPathRequestDto> membersPathRequestDtos = membersPathPostRequestDto.getRoute();
+        Path path = getPath(membersPathRequestDtos);
         memberService.savePath(path);
         return new ResponseEntity<>(BaseResponse.of(request, CREATED.value()), CREATED);
     }
 
-    private Path getPath(List<MembersPathRequestDto> route) {
+    private Path getPath(List<MembersPathRequestDto> membersPathRequestDtos) {
+        Member member = memberService.findByUsername(getCurrentUsername());
+        LineString route = getRoute(membersPathRequestDtos);
+        return Path.builder()
+                .route(route)
+                .member(member)
+                .build();
+    }
+
+    private LineString getRoute(List<MembersPathRequestDto> route) {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Coordinate[] coordinates = new Coordinate[route.size()];
         for (int i = 0; i < route.size(); i++) {
             coordinates[i] = new Coordinate(route.get(i).getLatitude(), route.get(i).getLongitude());
         }
-        LineString lineString = geometryFactory.createLineString(coordinates);
-        return Path.builder()
-                .route(lineString)
-                .member(memberService.findByUsername(getCurrentUsername()))
-                .build();
+        return geometryFactory.createLineString(coordinates);
     }
+
+    @GetMapping("/intersections")
+
+
 
     @PutMapping("/position")
     public ResponseEntity<BaseResponse> updatePosition(@Valid @RequestBody MembersPositionPutRequestDto membersPositionPutRequestDto, HttpServletRequest request) {
