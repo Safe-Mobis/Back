@@ -8,11 +8,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.*;
-import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.MOTORCYCLE;
+import static java.lang.Boolean.TRUE;
 
 @Builder
 @Getter
@@ -23,8 +24,8 @@ import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.MOTORCYCLE;
 public class Member extends BaseEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id", updatable = false, nullable = false)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -41,9 +42,9 @@ public class Member extends BaseEntity implements UserDetails {
     @Builder.Default
     private List<TrafficMode> trafficModes = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "position_id")
-    private Position position;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Path> paths = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -76,28 +77,19 @@ public class Member extends BaseEntity implements UserDetails {
         return true;
     }
 
-    public void setTrafficModes(List<TrafficMode> trafficModes) {
-        this.trafficModes = trafficModes;
-    }
-
-    public Map<TrafficCode, Boolean> getTrafficWarningMap() throws Exception {
-        TrafficMode trafficMode = getCurrentTrafficMode();
-        Map<TrafficCode, Boolean> warningMap = new HashMap<>();
-        warningMap.put(CAR, trafficMode.isCarFlag());
-        warningMap.put(PEDESTRIAN, trafficMode.isPedestrianFlag());
-        warningMap.put(CHILD, trafficMode.isChildFlag());
-        warningMap.put(KICK_BOARD, trafficMode.isKickBoardFlag());
-        warningMap.put(BICYCLE, trafficMode.isBicycleFlag());
-        warningMap.put(MOTORCYCLE, trafficMode.isMotorcycleFlag());
-        return warningMap;
-    }
-
-    public TrafficMode getCurrentTrafficMode() throws Exception {
-        for (TrafficMode trafficMode : trafficModes) {
-            if (trafficCode == trafficMode.getTrafficCode()) {
-                return trafficMode;
-            }
+    public void initializeTrafficModes() {
+        for (TrafficCode trafficCode : TrafficCode.values()) {
+            trafficModes.add(TrafficMode.builder()
+                    .trafficCode(trafficCode)
+                    .carFlag(TRUE)
+                    .pedestrianFlag(TRUE)
+                    .childFlag(TRUE)
+                    .kickBoardFlag(TRUE)
+                    .bicycleFlag(TRUE)
+                    .motorcycleFlag(TRUE)
+                    .member(this)
+                    .build());
         }
-        throw new Exception("사용자의 현재 trafficCode[" + trafficCode + "]와 일치하는 trafficMode가 존재하지 않습니다.");
     }
+
 }
