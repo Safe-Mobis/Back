@@ -8,10 +8,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.*;
 import static java.lang.Boolean.TRUE;
 
 @Builder
@@ -44,10 +45,6 @@ public class Member extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Path> paths = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "position_id")
-    private Position position;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -95,32 +92,4 @@ public class Member extends BaseEntity implements UserDetails {
         }
     }
 
-    public Map<TrafficCode, Boolean> getTrafficWarningMap() throws Exception {
-        TrafficMode trafficMode = getCurrentTrafficMode();
-        Map<TrafficCode, Boolean> warningMap = new HashMap<>();
-        warningMap.put(CAR, trafficMode.isCarFlag());
-        warningMap.put(PEDESTRIAN, trafficMode.isPedestrianFlag());
-        warningMap.put(CHILD, trafficMode.isChildFlag());
-        warningMap.put(KICK_BOARD, trafficMode.isKickBoardFlag());
-        warningMap.put(BICYCLE, trafficMode.isBicycleFlag());
-        warningMap.put(MOTORCYCLE, trafficMode.isMotorcycleFlag());
-        return warningMap;
-    }
-
-    public TrafficMode getCurrentTrafficMode() throws Exception {
-        for (TrafficMode trafficMode : trafficModes) {
-            if (trafficCode == trafficMode.getTrafficCode()) {
-                return trafficMode;
-            }
-        }
-        throw new Exception("사용자의 현재 trafficCode[" + trafficCode + "]와 일치하는 trafficMode가 존재하지 않습니다.");
-    }
-
-    public void updatePosition(Position updatePosition) {
-        if (position == null) {
-            position = updatePosition;
-        } else {
-            position.updatePosition(updatePosition);
-        }
-    }
 }

@@ -2,14 +2,12 @@ package com.vroomvroom.safemobis.controller;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
-import com.vroomvroom.safemobis.domain.Position;
 import com.vroomvroom.safemobis.dto.request.member.MembersLoginPostRequestDto;
 import com.vroomvroom.safemobis.dto.request.member.MembersPathPostRequestDto;
-import com.vroomvroom.safemobis.dto.request.member.MembersPositionPutRequestDto;
 import com.vroomvroom.safemobis.dto.request.member.MembersPostRequestDto;
 import com.vroomvroom.safemobis.dto.request.member.format.MembersPathRequestDto;
 import com.vroomvroom.safemobis.dto.response.base.BaseResponse;
-import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
+import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -91,30 +89,9 @@ public class MemberController {
     }
 
     @GetMapping("/intersections")
-
-
-
-    @PutMapping("/position")
-    public ResponseEntity<BaseResponse> updatePosition(@Valid @RequestBody MembersPositionPutRequestDto membersPositionPutRequestDto, HttpServletRequest request) {
-        Position updatePosition = Position.builder()
-                .x(membersPositionPutRequestDto.getX())
-                .y(membersPositionPutRequestDto.getY())
-                .direction(membersPositionPutRequestDto.getDirection())
-                .velocity(membersPositionPutRequestDto.getVelocity())
-                .acceleration(membersPositionPutRequestDto.getAcceleration())
-                .build();
-        memberService.updatePosition(updatePosition);
-        return new ResponseEntity<>(BaseResponse.of(request, OK.value()), OK);
-    }
-
-    @GetMapping("/warning")
-    public ResponseEntity<BaseResponse> getWarning(HttpServletRequest request) throws Exception {
-        long beforeTime = System.currentTimeMillis();
-        MembersWarningGetResponseDto membersWarningGetResponseDto = memberService.getSurroundMembersAndWarning();
-        long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-        long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
-        System.out.println("시간차이(m) : "+secDiffTime);
-        return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersWarningGetResponseDto), OK);
+    public ResponseEntity<BaseResponse> getIntersections(HttpServletRequest request) {
+        MembersIntersectionsGetResponseDto membersIntersectionsGetResponseDto = memberService.getIntersections();
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersIntersectionsGetResponseDto), OK);
     }
 
     @PostMapping("/test")
