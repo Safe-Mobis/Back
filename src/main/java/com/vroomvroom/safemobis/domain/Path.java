@@ -22,10 +22,10 @@ public class Path extends BaseEntity {
     @Column(name = "path_id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "GEOMETRY SRID 4326")
     private LineString route;
 
-    @Column
+    @Column(columnDefinition = "GEOMETRY SRID 4326")
     private Point warningPosition;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,4 +35,8 @@ public class Path extends BaseEntity {
     @OneToMany(mappedBy = "path", cascade = CascadeType.ALL)
     @Builder.Default
     private List<PathIntersection> pathIntersections = new ArrayList<>();
+
+    public void setPathIntersections(List<PathIntersection> pathIntersections) {
+        this.pathIntersections = pathIntersections;
+    }
 }
