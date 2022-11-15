@@ -22,10 +22,10 @@ public class Path extends BaseEntity {
     @Column(name = "path_id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "GEOMETRY SRID 4326")
+    @Column(nullable = false, columnDefinition = "geometry(LineString, 4326)")
     private LineString route;
 
-    @Column(columnDefinition = "GEOMETRY SRID 4326")
+    @Column(columnDefinition = "geometry(Point, 4326)")
     private Point warningPosition;
 
     @ManyToOne(fetch = FetchType.LAZY)
