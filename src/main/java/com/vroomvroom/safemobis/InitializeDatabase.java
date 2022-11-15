@@ -1,14 +1,14 @@
 package com.vroomvroom.safemobis;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.PrecisionModel;
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
 import com.vroomvroom.safemobis.repository.PathRepository;
 import com.vroomvroom.safemobis.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

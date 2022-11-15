@@ -21,7 +21,7 @@ public class Intersection extends BaseEntity {
     @Column(updatable = false, nullable = false)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "GEOMETRY SRID 4326")
+    @Column(nullable = false, columnDefinition = "geometry(Point, 4326)")
     private Point position;
 
     @OneToMany(mappedBy = "intersection")

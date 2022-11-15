@@ -20,6 +20,7 @@ public class PathIntersection extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private WarningCode warningCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
