@@ -1,4 +1,4 @@
-package com.vroomvroom.safemobis.repository;
+package com.vroomvroom.safemobis.repository.path;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;

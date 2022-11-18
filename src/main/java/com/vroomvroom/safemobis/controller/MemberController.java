@@ -2,20 +2,17 @@ package com.vroomvroom.safemobis.controller;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
-import com.vroomvroom.safemobis.dto.request.member.MembersLoginPostRequestDto;
-import com.vroomvroom.safemobis.dto.request.member.MembersPathPostRequestDto;
-import com.vroomvroom.safemobis.dto.request.member.MembersPostRequestDto;
+import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
+import com.vroomvroom.safemobis.dto.request.member.*;
 import com.vroomvroom.safemobis.dto.request.member.format.MembersPathRequestDto;
 import com.vroomvroom.safemobis.dto.response.base.BaseResponse;
 import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
+import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -92,6 +89,29 @@ public class MemberController {
     public ResponseEntity<BaseResponse> getIntersections(HttpServletRequest request) {
         MembersIntersectionsGetResponseDto membersIntersectionsGetResponseDto = memberService.getIntersections();
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersIntersectionsGetResponseDto), OK);
+    }
+
+    @PostMapping("/warning-position")
+    public ResponseEntity<BaseResponse> saveWarningPosition(@Valid @RequestBody MembersWarningPositionGetRequestDto membersWarningPositionGetRequestDto, HttpServletRequest request) {
+        Long intersectionId = membersWarningPositionGetRequestDto.getIntersectionId();
+        WarningCode warningCode = membersWarningPositionGetRequestDto.getWarningCode();
+        double latitude = membersWarningPositionGetRequestDto.getLatitude();
+        double longitude = membersWarningPositionGetRequestDto.getLongitude();
+        Point warningPosition = getPoint(latitude, longitude);
+        memberService.saveWarningPosition(intersectionId, warningCode, warningPosition);
+        return new ResponseEntity<>(BaseResponse.of(request, CREATED.value()), CREATED);
+    }
+
+    private Point getPoint(double latitude, double longitude) {
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        return geometryFactory.createPoint(new Coordinate(latitude, longitude));
+    }
+
+    @GetMapping("/warning")
+    public ResponseEntity<BaseResponse> getWarning(@Valid @ModelAttribute MembersWarningGetRequestDto membersWarningGetRequestDto, HttpServletRequest request) {
+        Long intersectionId = membersWarningGetRequestDto.getIntersectionId();
+        MembersWarningGetResponseDto membersWarningGetResponseDto = memberService.getWarning(intersectionId);
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersWarningGetResponseDto), OK);
     }
 
     @PostMapping("/test")
