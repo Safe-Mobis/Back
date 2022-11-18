@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.SAFE;
 import static com.vroomvroom.safemobis.security.SecurityUtil.getCurrentUsername;
@@ -133,15 +134,23 @@ public class MemberService {
     @Transactional
     public void saveWarningPosition(Long intersectionId, WarningCode warningCode, Point warningPosition) {
         Member member = findByUsername(getCurrentUsername());
-        PathIntersection pathIntersection = pathIntersectionRepository.findByMemberAndIntersectionId(member, intersectionId)
-                .orElseThrow(() -> new EntityNotFoundException("[" + intersectionId + "] 해당 교차지점에 대한 경로가 없습니다."));
+        PathIntersection pathIntersection = findPathIntersectionByMemberAndIntersectionId(member, intersectionId, true);
         pathIntersection.setWarning(warningCode, warningPosition);
+    }
+
+    private PathIntersection findPathIntersectionByMemberAndIntersectionId(Member member, Long intersectionId, boolean withMeFlag) {
+        Optional<PathIntersection> pathIntersectionOptional;
+        if (withMeFlag) {
+            pathIntersectionOptional = pathIntersectionRepository.findByMemberAndIntersectionId(member, intersectionId);
+        } else {
+            pathIntersectionOptional = pathIntersectionRepository.findByMemberNotAndIntersectionId(member, intersectionId);
+        }
+        return pathIntersectionOptional.orElseThrow(() -> new EntityNotFoundException("intersectionId [" + intersectionId + "] 해당 교차지점에 대한 경로가 없습니다."));
     }
 
     public MembersWarningGetResponseDto getWarning(Long intersectionId) {
         Member member = findByUsername(getCurrentUsername());
-        PathIntersection pathIntersection = pathIntersectionRepository.findByMemberNotAndIntersectionId(member, intersectionId)
-                .orElseThrow(() -> new EntityNotFoundException("[" + intersectionId + "] 해당 교차지점에 대한 경로가 없습니다."));
+        PathIntersection pathIntersection = findPathIntersectionByMemberAndIntersectionId(member, intersectionId, false);
         return MembersWarningGetResponseDto.from(pathIntersection);
     }
 }
