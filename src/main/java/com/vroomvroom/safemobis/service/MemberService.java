@@ -4,17 +4,18 @@ import com.vroomvroom.safemobis.domain.Intersection;
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
 import com.vroomvroom.safemobis.domain.PathIntersection;
+import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
 import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
+import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.error.exception.EntityAlreadyExistException;
 import com.vroomvroom.safemobis.error.exception.EntityNotFoundException;
 import com.vroomvroom.safemobis.repository.MemberRepository;
-import com.vroomvroom.safemobis.repository.PathRepository;
+import com.vroomvroom.safemobis.repository.path.PathRepository;
+import com.vroomvroom.safemobis.repository.pathintersection.PathIntersectionRepository;
 import com.vroomvroom.safemobis.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -36,6 +37,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PathRepository pathRepository;
+    private final PathIntersectionRepository pathIntersectionRepository;
 
     @Transactional
     public void save(Member member) {
@@ -91,16 +93,20 @@ public class MemberService {
     }
 
     private void addBothPathInterSection(List<PathIntersection> pathIntersections, Path path1, Path path2, Point intersectionPoint) {
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point defaultPoint = geometryFactory.createPoint(new Coordinate(-1.0, -1.0));
         Intersection intersection = Intersection.builder()
                 .position(intersectionPoint)
                 .build();
         pathIntersections.add(PathIntersection.builder()
                 .warningCode(SAFE)
+                .warningPosition(defaultPoint)
                 .path(path1)
                 .intersection(intersection)
                 .build());
         pathIntersections.add(PathIntersection.builder()
                 .warningCode(SAFE)
+                .warningPosition(defaultPoint)
                 .path(path2)
                 .intersection(intersection)
                 .build());
@@ -124,4 +130,18 @@ public class MemberService {
         return intersections;
     }
 
+    @Transactional
+    public void saveWarningPosition(Long intersectionId, WarningCode warningCode, Point warningPosition) {
+        Member member = findByUsername(getCurrentUsername());
+        PathIntersection pathIntersection = pathIntersectionRepository.findByMemberAndIntersectionId(member, intersectionId)
+                .orElseThrow(() -> new EntityNotFoundException("[" + intersectionId + "] 해당 교차지점에 대한 경로가 없습니다."));
+        pathIntersection.setWarning(warningCode, warningPosition);
+    }
+
+    public MembersWarningGetResponseDto getWarning(Long intersectionId) {
+        Member member = findByUsername(getCurrentUsername());
+        PathIntersection pathIntersection = pathIntersectionRepository.findByMemberNotAndIntersectionId(member, intersectionId)
+                .orElseThrow(() -> new EntityNotFoundException("[" + intersectionId + "] 해당 교차지점에 대한 경로가 없습니다."));
+        return MembersWarningGetResponseDto.from(pathIntersection);
+    }
 }
