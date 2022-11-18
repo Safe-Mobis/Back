@@ -6,7 +6,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
-import com.vroomvroom.safemobis.repository.PathRepository;
+import com.vroomvroom.safemobis.repository.path.PathRepository;
 import com.vroomvroom.safemobis.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

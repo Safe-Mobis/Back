@@ -2,7 +2,6 @@ package com.vroomvroom.safemobis.domain;
 
 import lombok.*;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -25,9 +24,6 @@ public class Path extends BaseEntity {
     @Column(nullable = false, columnDefinition = "geometry(LineString, 4326)")
     private LineString route;
 
-    @Column(columnDefinition = "geometry(Point, 4326)")
-    private Point warningPosition;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -39,4 +35,5 @@ public class Path extends BaseEntity {
     public void setPathIntersections(List<PathIntersection> pathIntersections) {
         this.pathIntersections = pathIntersections;
     }
+
 }
