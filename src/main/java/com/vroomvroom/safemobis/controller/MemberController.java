@@ -114,6 +114,12 @@ public class MemberController {
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersWarningGetResponseDto), OK);
     }
 
+    @DeleteMapping
+    public ResponseEntity<BaseResponse> delete(HttpServletRequest request) {
+        memberService.delete();
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value()), OK);
+    }
+
     @PostMapping("/test")
     public ResponseEntity<String> test() {
         return new ResponseEntity<>("test success!!", OK);

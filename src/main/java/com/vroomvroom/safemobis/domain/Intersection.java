@@ -24,7 +24,7 @@ public class Intersection extends BaseEntity {
     @Column(nullable = false, columnDefinition = "geometry(Point, 4326)")
     private Point position;
 
-    @OneToMany(mappedBy = "intersection")
+    @OneToMany(mappedBy = "intersection", cascade = CascadeType.ALL)
     @Builder.Default
     private List<PathIntersection> pathIntersections = new ArrayList<>();
 }

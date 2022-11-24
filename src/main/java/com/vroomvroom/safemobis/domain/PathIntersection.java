@@ -31,7 +31,7 @@ public class PathIntersection extends BaseEntity {
     @JoinColumn(name = "path_id")
     private Path path;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "intersection_id")
     private Intersection intersection;
 
