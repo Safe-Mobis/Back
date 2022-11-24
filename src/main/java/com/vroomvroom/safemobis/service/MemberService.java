@@ -10,6 +10,7 @@ import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.error.exception.EntityAlreadyExistException;
 import com.vroomvroom.safemobis.error.exception.EntityNotFoundException;
+import com.vroomvroom.safemobis.repository.IntersectionRepository;
 import com.vroomvroom.safemobis.repository.MemberRepository;
 import com.vroomvroom.safemobis.repository.path.PathRepository;
 import com.vroomvroom.safemobis.repository.pathintersection.PathIntersectionRepository;
@@ -39,6 +40,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PathRepository pathRepository;
     private final PathIntersectionRepository pathIntersectionRepository;
+    private final IntersectionRepository intersectionRepository;
 
     @Transactional
     public void save(Member member) {
@@ -152,5 +154,13 @@ public class MemberService {
         Member member = findByUsername(getCurrentUsername());
         PathIntersection pathIntersection = findPathIntersectionByMemberAndIntersectionId(member, intersectionId, false);
         return MembersWarningGetResponseDto.from(pathIntersection);
+    }
+
+    @Transactional
+    public void delete() {
+        Member member = findByUsername(getCurrentUsername());
+        List<Intersection> intersections = getIntersections(member);
+        memberRepository.delete(member);
+        intersectionRepository.deleteAll(intersections);
     }
 }
