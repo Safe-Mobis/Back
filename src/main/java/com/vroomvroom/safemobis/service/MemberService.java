@@ -160,7 +160,9 @@ public class MemberService {
     public void delete() {
         Member member = findByUsername(getCurrentUsername());
         List<Intersection> intersections = getIntersections(member);
+        if (intersections.size() > 0) {
+            intersectionRepository.deleteAll(intersections);
+        }
         memberRepository.delete(member);
-        intersectionRepository.deleteAll(intersections);
     }
 }
