@@ -11,6 +11,4 @@ public class MembersWarningPositionPutRequestDto {
     private double latitude;
     private double longitude;
 
-    public static class MembersTrafficCodePutRequestDto {
-    }
 }

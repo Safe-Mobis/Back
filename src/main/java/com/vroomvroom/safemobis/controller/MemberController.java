@@ -8,6 +8,7 @@ import com.vroomvroom.safemobis.dto.request.member.*;
 import com.vroomvroom.safemobis.dto.request.member.format.MembersPathRequestDto;
 import com.vroomvroom.safemobis.dto.response.base.BaseResponse;
 import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
+import com.vroomvroom.safemobis.dto.response.member.MembersTrafficCodeGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.service.MemberService;
@@ -60,12 +61,18 @@ public class MemberController {
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), tokenInfo), OK);
     }
 
-    @PutMapping ("/trafficcode")
+    @PatchMapping ("/trafficcode")
     public ResponseEntity<BaseResponse> setTrafficcode(@Valid @RequestBody MembersTrafficCodePutRequestDto membersTrafficCodePutRequestDto, HttpServletRequest request) {
         String username = membersTrafficCodePutRequestDto.getUsername();
         TrafficCode trafficCode = membersTrafficCodePutRequestDto.getTrafficCode();
         memberService.setTrafficCode(username, trafficCode);
-        return new ResponseEntity<>(BaseResponse.of(request, CREATED.value()), CREATED);
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value()), OK);
+    }
+
+    @GetMapping("/trafficcode")
+    public ResponseEntity<BaseResponse> getTrafficcode(HttpServletRequest request) {
+        MembersTrafficCodeGetResponseDto membersTrafficCodeGetResponseDto = memberService.getTrafficCode();
+        return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersTrafficCodeGetResponseDto), OK);
     }
 
     @PostMapping("/path")

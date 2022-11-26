@@ -7,6 +7,7 @@ import com.vroomvroom.safemobis.domain.PathIntersection;
 import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
 import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
+import com.vroomvroom.safemobis.dto.response.member.MembersTrafficCodeGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
 import com.vroomvroom.safemobis.error.exception.EntityAlreadyExistException;
@@ -72,6 +73,11 @@ public class MemberService {
     public void setTrafficCode(String username, TrafficCode trafficCode) {
         Member member = memberRepository.findByUsername(username).orElseThrow();
         member.setTrafficCode(trafficCode);
+    }
+
+    public MembersTrafficCodeGetResponseDto getTrafficCode() {
+        Member member = findByUsername(getCurrentUsername());
+        return MembersTrafficCodeGetResponseDto.from(member);
     }
 
     @Transactional
