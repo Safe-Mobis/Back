@@ -4,6 +4,7 @@ import com.vroomvroom.safemobis.domain.Intersection;
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
 import com.vroomvroom.safemobis.domain.PathIntersection;
+import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
 import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
 import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
@@ -65,6 +66,12 @@ public class MemberService {
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("[" + username + "] 회원가입이 되어있지 않습니다."));
+    }
+
+    @Transactional
+    public void setTrafficCode(String username, TrafficCode trafficCode) {
+        Member member = memberRepository.findByUsername(username).orElseThrow();
+        member.setTrafficCode(trafficCode);
     }
 
     @Transactional

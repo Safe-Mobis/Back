@@ -2,6 +2,7 @@ package com.vroomvroom.safemobis.controller;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
+import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
 import com.vroomvroom.safemobis.dto.request.member.*;
 import com.vroomvroom.safemobis.dto.request.member.format.MembersPathRequestDto;
@@ -59,6 +60,14 @@ public class MemberController {
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), tokenInfo), OK);
     }
 
+    @PutMapping ("/trafficcode")
+    public ResponseEntity<BaseResponse> setTrafficcode(@Valid @RequestBody MembersTrafficCodePutRequestDto membersTrafficCodePutRequestDto, HttpServletRequest request) {
+        String username = membersTrafficCodePutRequestDto.getUsername();
+        TrafficCode trafficCode = membersTrafficCodePutRequestDto.getTrafficCode();
+        memberService.setTrafficCode(username, trafficCode);
+        return new ResponseEntity<>(BaseResponse.of(request, CREATED.value()), CREATED);
+    }
+
     @PostMapping("/path")
     public ResponseEntity<BaseResponse> savePath(@Valid @RequestBody MembersPathPostRequestDto membersPathPostRequestDto, HttpServletRequest request) {
         List<MembersPathRequestDto> membersPathRequestDtos = membersPathPostRequestDto.getRoute();
@@ -92,7 +101,7 @@ public class MemberController {
     }
 
     @PostMapping("/warning-position")
-    public ResponseEntity<BaseResponse> saveWarningPosition(@Valid @RequestBody MembersWarningPositionGetRequestDto membersWarningPositionGetRequestDto, HttpServletRequest request) {
+    public ResponseEntity<BaseResponse> saveWarningPosition(@Valid @RequestBody MembersWarningPositionPutRequestDto membersWarningPositionGetRequestDto, HttpServletRequest request) {
         Long intersectionId = membersWarningPositionGetRequestDto.getIntersectionId();
         WarningCode warningCode = membersWarningPositionGetRequestDto.getWarningCode();
         double latitude = membersWarningPositionGetRequestDto.getLatitude();
