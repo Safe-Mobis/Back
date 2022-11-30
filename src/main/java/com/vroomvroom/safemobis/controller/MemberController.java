@@ -124,7 +124,7 @@ public class MemberController {
     }
 
     @PostMapping("/warning-position")
-    public ResponseEntity<BaseResponse> saveWarningPosition(@Valid @RequestBody MembersWarningPositionPutRequestDto membersWarningPositionGetRequestDto, HttpServletRequest request) {
+    public ResponseEntity<BaseResponse> saveWarningPosition(@Valid @RequestBody MembersWarningPositionGetRequestDto membersWarningPositionGetRequestDto, HttpServletRequest request) {
         Long intersectionId = membersWarningPositionGetRequestDto.getIntersectionId();
         WarningCode warningCode = membersWarningPositionGetRequestDto.getWarningCode();
         double latitude = membersWarningPositionGetRequestDto.getLatitude();
