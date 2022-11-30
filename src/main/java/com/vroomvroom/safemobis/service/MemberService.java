@@ -21,12 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Column;
 import java.util.*;
 
 import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.SAFE;
 import static com.vroomvroom.safemobis.security.SecurityUtil.getCurrentUsername;
-import static java.lang.Boolean.TRUE;
 
 @Service
 @Transactional(readOnly = true)

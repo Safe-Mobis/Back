@@ -5,6 +5,7 @@ import com.vroomvroom.safemobis.dto.response.member.format.MembersTrafficModeRes
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class MembersTrafficModeGetResponseDto extends BaseModel {
 
     @NotNull
