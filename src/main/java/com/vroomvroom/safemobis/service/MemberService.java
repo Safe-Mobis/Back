@@ -84,8 +84,9 @@ public class MemberService {
             if (numPoints == 1) {
                 Point intersectionPoint = (Point) intersectionGeometry;
                 addBothPathInterSection(pathIntersections, path, memberPath, intersectionPoint);
-            } else {
-                LineString lineString = (LineString) intersectionGeometry;
+            } else if (numPoints >= 2) {
+                GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+                LineString lineString = geometryFactory.createLineString(intersectionGeometry.getCoordinates());
                 for (int i = 0; i < numPoints; i++) {
                     Point intersectionPoint = lineString.getPointN(i);
                     addBothPathInterSection(pathIntersections, path, memberPath, intersectionPoint);
