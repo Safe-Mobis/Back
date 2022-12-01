@@ -24,7 +24,7 @@ public class MembersTrafficModeRequestDto {
     private boolean childFlag;
 
     @NotNull
-    private boolean kickboardFlag;
+    private boolean kickBoardFlag;
 
     @NotNull
     private boolean motorcycleFlag;

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static java.lang.Boolean.TRUE;
 
 @Builder
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -92,4 +92,7 @@ public class Member extends BaseEntity implements UserDetails {
         }
     }
 
+    public void updateTrafficCode(TrafficCode trafficCode) {
+        this.trafficCode = trafficCode;
+    }
 }
