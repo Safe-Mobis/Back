@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static java.lang.Boolean.TRUE;
 
 @Builder
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity

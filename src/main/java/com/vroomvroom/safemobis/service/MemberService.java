@@ -1,13 +1,15 @@
 package com.vroomvroom.safemobis.service;
 
+import com.vroomvroom.safemobis.domain.*;
+import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import com.vroomvroom.safemobis.domain.Intersection;
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
 import com.vroomvroom.safemobis.domain.PathIntersection;
 import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
-import com.vroomvroom.safemobis.dto.response.member.MembersIntersectionsGetResponseDto;
-import com.vroomvroom.safemobis.dto.response.member.MembersWarningGetResponseDto;
-import com.vroomvroom.safemobis.dto.response.member.TokenInfo;
+import com.vroomvroom.safemobis.dto.request.member.format.MembersTrafficModeRequestDto;
+import com.vroomvroom.safemobis.dto.response.member.*;
+import com.vroomvroom.safemobis.dto.response.member.format.MembersTrafficModeResponseDto;
 import com.vroomvroom.safemobis.error.exception.EntityAlreadyExistException;
 import com.vroomvroom.safemobis.error.exception.EntityNotFoundException;
 import com.vroomvroom.safemobis.repository.IntersectionRepository;
@@ -23,9 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.vroomvroom.safemobis.domain.enumerate.WarningCode.SAFE;
 import static com.vroomvroom.safemobis.security.SecurityUtil.getCurrentUsername;
@@ -65,6 +65,57 @@ public class MemberService {
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("[" + username + "] 회원가입이 되어있지 않습니다."));
+    }
+
+    @Transactional
+    public void setTrafficCode(TrafficCode trafficCode) {
+        Member member = findByUsername(getCurrentUsername());
+        member.setTrafficCode(trafficCode);
+    }
+
+    public MembersTrafficCodeGetResponseDto getTrafficCode() {
+        Member member = findByUsername(getCurrentUsername());
+        return MembersTrafficCodeGetResponseDto.from(member);
+    }
+
+    @Transactional
+    public void setTrafficMode(List<MembersTrafficModeRequestDto> membersTrafficModeRequestDtos) {
+        Member member = findByUsername(getCurrentUsername());
+        Map<TrafficCode, TrafficMode> map = new HashMap<>();
+        for (TrafficMode t: member.getTrafficModes()) {
+            map.put(t.getTrafficCode(), t);
+        }
+
+        for (MembersTrafficModeRequestDto m: membersTrafficModeRequestDtos) {
+            TrafficMode t = map.get(m.getTrafficCode());
+            t.setCarFlag(m.isCarFlag());
+            t.setPedestrianFlag(m.isPedestrianFlag());
+            t.setChildFlag(m.isChildFlag());
+            t.setKickBoardFlag(m.isKickboardFlag());
+            t.setBicycleFlag(m.isBicycleFlag());
+            t.setMotorcycleFlag(m.isMotorcycleFlag());
+        }
+    }
+
+    @Transactional
+    public List<MembersTrafficModeResponseDto> getTrafficMode() {
+        Member member = findByUsername(getCurrentUsername());
+        List<TrafficMode> trafficModes = member.getTrafficModes();
+        List<MembersTrafficModeResponseDto> membersTrafficModeResponseDtos = new ArrayList<>();
+        for (TrafficMode t: trafficModes) {
+            MembersTrafficModeResponseDto m = MembersTrafficModeResponseDto.builder()
+                    .trafficCode(t.getTrafficCode())
+                    .carFlag(t.isCarFlag())
+                    .pedestrianFlag(t.isPedestrianFlag())
+                    .childFlag(t.isChildFlag())
+                    .kickboardFlag(t.isKickBoardFlag())
+                    .bicycleFlag(t.isBicycleFlag())
+                    .motorcycleFlag(t.isMotorcycleFlag())
+                    .build();
+
+            membersTrafficModeResponseDtos.add(m);
+        }
+        return membersTrafficModeResponseDtos;
     }
 
     @Transactional
