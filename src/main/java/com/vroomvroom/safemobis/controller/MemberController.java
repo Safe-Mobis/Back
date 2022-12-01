@@ -2,7 +2,6 @@ package com.vroomvroom.safemobis.controller;
 
 import com.vroomvroom.safemobis.domain.Member;
 import com.vroomvroom.safemobis.domain.Path;
-import com.vroomvroom.safemobis.domain.TrafficMode;
 import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import com.vroomvroom.safemobis.domain.enumerate.WarningCode;
 import com.vroomvroom.safemobis.dto.request.member.*;
@@ -21,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.vroomvroom.safemobis.domain.enumerate.TrafficCode.CAR;
 import static com.vroomvroom.safemobis.security.SecurityUtil.getCurrentUsername;
@@ -64,32 +61,31 @@ public class MemberController {
     }
 
     @PatchMapping ("/traffic-code")
-    public ResponseEntity<BaseResponse> setTrafficcode(@Valid @RequestBody MembersTrafficCodePatchRequestDto membersTrafficCodePatchRequestDto, HttpServletRequest request) {
+    public ResponseEntity<BaseResponse> updateTrafficCode(@Valid @RequestBody MembersTrafficCodePatchRequestDto membersTrafficCodePatchRequestDto, HttpServletRequest request) {
         TrafficCode trafficCode = membersTrafficCodePatchRequestDto.getTrafficCode();
-        memberService.setTrafficCode(trafficCode);
+        memberService.updateTrafficCode(trafficCode);
         return new ResponseEntity<>(BaseResponse.of(request, OK.value()), OK);
     }
 
     @GetMapping("/traffic-code")
-    public ResponseEntity<BaseResponse> getTrafficcode(HttpServletRequest request) {
+    public ResponseEntity<BaseResponse> getTrafficCode(HttpServletRequest request) {
         MembersTrafficCodeGetResponseDto membersTrafficCodeGetResponseDto = memberService.getTrafficCode();
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersTrafficCodeGetResponseDto), OK);
     }
 
     @PatchMapping("/traffic-mode")
-    public ResponseEntity<BaseResponse> setTrafficmode(@Valid @RequestBody MembersTrafficModePatchRequestDto membersTrafficModePatchRequestDto, HttpServletRequest request) {
+    public ResponseEntity<BaseResponse> updateTrafficMode(@Valid @RequestBody MembersTrafficModePatchRequestDto membersTrafficModePatchRequestDto, HttpServletRequest request) {
         List<MembersTrafficModeRequestDto> membersTrafficModeRequestDtos = membersTrafficModePatchRequestDto.getTrafficMode();
-        memberService.setTrafficMode(membersTrafficModeRequestDtos);
+        memberService.updateTrafficMode(membersTrafficModeRequestDtos);
         return new ResponseEntity<>(BaseResponse.of(request, OK.value()), OK);
     }
 
-
     @GetMapping("/traffic-mode")
-    private ResponseEntity<BaseResponse> getTrafficmode(HttpServletRequest request) {
-        List<MembersTrafficModeResponseDto> membersTrafficModeResponseDtos = memberService.getTrafficMode();
+    private ResponseEntity<BaseResponse> getTrafficModes(HttpServletRequest request) {
+        List<MembersTrafficModeResponseDto> membersTrafficModeResponseDtos = memberService.getTrafficModes();
         MembersTrafficModeGetResponseDto membersTrafficModeGetResponseDto = MembersTrafficModeGetResponseDto.from(membersTrafficModeResponseDtos);
         return new ResponseEntity<>(BaseResponse.of(request, OK.value(), membersTrafficModeGetResponseDto), OK);
-     }
+    }
 
     @PostMapping("/path")
     public ResponseEntity<BaseResponse> savePath(@Valid @RequestBody MembersPathPostRequestDto membersPathPostRequestDto, HttpServletRequest request) {

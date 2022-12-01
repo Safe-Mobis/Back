@@ -1,13 +1,14 @@
 package com.vroomvroom.safemobis.domain;
 
 import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
+import com.vroomvroom.safemobis.dto.request.member.format.MembersTrafficModeRequestDto;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
 @Builder
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -45,4 +46,12 @@ public class TrafficMode extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public void updateWarningFlag(MembersTrafficModeRequestDto m) {
+        carFlag = m.isCarFlag();
+        pedestrianFlag = m.isPedestrianFlag();
+        childFlag = m.isChildFlag();
+        kickBoardFlag = m.isKickBoardFlag();
+        bicycleFlag = m.isBicycleFlag();
+        motorcycleFlag = m.isMotorcycleFlag();
+    }
 }

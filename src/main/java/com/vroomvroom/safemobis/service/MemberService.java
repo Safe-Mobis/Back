@@ -68,9 +68,9 @@ public class MemberService {
     }
 
     @Transactional
-    public void setTrafficCode(TrafficCode trafficCode) {
+    public void updateTrafficCode(TrafficCode trafficCode) {
         Member member = findByUsername(getCurrentUsername());
-        member.setTrafficCode(trafficCode);
+        member.updateTrafficCode(trafficCode);
     }
 
     public MembersTrafficCodeGetResponseDto getTrafficCode() {
@@ -79,26 +79,20 @@ public class MemberService {
     }
 
     @Transactional
-    public void setTrafficMode(List<MembersTrafficModeRequestDto> membersTrafficModeRequestDtos) {
+    public void updateTrafficMode(List<MembersTrafficModeRequestDto> membersTrafficModeRequestDtos) {
         Member member = findByUsername(getCurrentUsername());
         Map<TrafficCode, TrafficMode> map = new HashMap<>();
         for (TrafficMode t: member.getTrafficModes()) {
             map.put(t.getTrafficCode(), t);
         }
-
         for (MembersTrafficModeRequestDto m: membersTrafficModeRequestDtos) {
             TrafficMode t = map.get(m.getTrafficCode());
-            t.setCarFlag(m.isCarFlag());
-            t.setPedestrianFlag(m.isPedestrianFlag());
-            t.setChildFlag(m.isChildFlag());
-            t.setKickBoardFlag(m.isKickboardFlag());
-            t.setBicycleFlag(m.isBicycleFlag());
-            t.setMotorcycleFlag(m.isMotorcycleFlag());
+            t.updateWarningFlag(m);
         }
     }
 
     @Transactional
-    public List<MembersTrafficModeResponseDto> getTrafficMode() {
+    public List<MembersTrafficModeResponseDto> getTrafficModes() {
         Member member = findByUsername(getCurrentUsername());
         List<TrafficMode> trafficModes = member.getTrafficModes();
         List<MembersTrafficModeResponseDto> membersTrafficModeResponseDtos = new ArrayList<>();
@@ -112,7 +106,6 @@ public class MemberService {
                     .bicycleFlag(t.isBicycleFlag())
                     .motorcycleFlag(t.isMotorcycleFlag())
                     .build();
-
             membersTrafficModeResponseDtos.add(m);
         }
         return membersTrafficModeResponseDtos;
