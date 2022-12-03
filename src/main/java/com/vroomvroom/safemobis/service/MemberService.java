@@ -123,6 +123,9 @@ public class MemberService {
         List<PathIntersection> pathIntersections = new ArrayList<>();
         List<Path> memberPaths = pathRepository.findAll();
         for (Path memberPath : memberPaths) {
+            if (path.getMember().getId().equals(memberPath.getMember().getId())) {
+                continue;
+            }
             Geometry intersectionGeometry = route.intersection(memberPath.getRoute());
             int numPoints = intersectionGeometry.getNumPoints();
             if (numPoints == 1) {
