@@ -1,5 +1,6 @@
 package com.vroomvroom.safemobis.domain;
 
+import com.vroomvroom.safemobis.domain.enumerate.TrafficCode;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.Boolean.TRUE;
+
 @Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,8 +24,8 @@ import java.util.stream.Collectors;
 public class Member extends BaseEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id", updatable = false, nullable = false)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -30,6 +33,18 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TrafficCode trafficCode;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<TrafficMode> trafficModes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Path> paths = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -60,5 +75,24 @@ public class Member extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void initializeTrafficModes() {
+        for (TrafficCode trafficCode : TrafficCode.values()) {
+            trafficModes.add(TrafficMode.builder()
+                    .trafficCode(trafficCode)
+                    .carFlag(TRUE)
+                    .pedestrianFlag(TRUE)
+                    .childFlag(TRUE)
+                    .kickBoardFlag(TRUE)
+                    .bicycleFlag(TRUE)
+                    .motorcycleFlag(TRUE)
+                    .member(this)
+                    .build());
+        }
+    }
+
+    public void updateTrafficCode(TrafficCode trafficCode) {
+        this.trafficCode = trafficCode;
     }
 }
